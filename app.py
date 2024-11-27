@@ -35,7 +35,7 @@ if uploaded_file is not None:
     st.image(uploaded_file, caption="업로드 이미지")
 
     # 모델 로드 및 예측
-    filepath = '...' #TODO
+    filepath = 'MobileNetV2.loss-0.60-accuracy-0.81.h5' #TODO
     model = load_model(filepath)
     print(model)
 
