@@ -58,7 +58,7 @@ with st.container():
                 두피 이미지를 업로드하면, <br>
                 딥러닝 모델이 탈모 진행 단계를 알려드립니다.
             </p>
-            <h5 style="text-align: center;">양호 >> 경증 >> 중등도 >> 중증</h5>
+            <h5 style="text-align: center;">양호 ➡ 경증 ➡ 중등도 ➡ 중증</h5>
         </div>
         """,
         unsafe_allow_html=True
@@ -107,6 +107,14 @@ if uploaded_file is not None:
         "탈모 진행 단계: 중증",
     ]
 
+    # 맞춤형 탈모 샴푸 추천 (이미지 경로)
+    shampoo_image_paths = {
+        "0": "streamlit_images/shampoo_0.png",
+        "1": "streamlit_images/shampoo_1.png",
+        "2": "streamlit_images/shampoo_2.png",
+        "3": "streamlit_images/shampoo_3.png",
+    }
+
     IMAGE_SIZE= 224
 
     # 이미지 준비
@@ -122,53 +130,61 @@ if uploaded_file is not None:
     a_image = preprocess_input(a_image)
     batch_image = a_image.reshape(1, IMAGE_SIZE, IMAGE_SIZE, 3)
 
-    # "탈모 진행 상태 확인하기"
-    with st.form(key="my_form"):
-        # 버튼 추가 (스타일 조정)
+    # 단일 버튼으로 변경
+    if st.button("탈모 진행 상태 확인하기 🔎", help="모발 상태를 예측합니다."):
+        # 예측 모델 로드 및 결과 출력 코드
+        pred_proba = model.predict(batch_image)
+        pred = np.argmax(pred_proba)
+        pred_label = class_names[pred]
+        pred_probability = pred_proba[0][pred]
+
         st.markdown(
-            """
-            <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
-                <button type="submit" style="
-                    background-color: #007BFF;
-                    color: white;
-                    padding: 20px 40px;
-                    font-size: 24px;
-                    border: none;
-                    border-radius: 10px;
-                    cursor: pointer;
-                    text-align: center;
-                ">
-                    탈모 진행 상태 확인하기 🔎
-                </button>
+            f"""
+            <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <h3 style="text-align: center; color: #333;">🔹 모발 상태 예측 결과 🔹</h3>
+                <div style="background-color: #aeb4f5; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                    <h4 style="color: #1c1d29;">예측: {pred_label}</h4>
+                </div>
+                <div style="background-color: #f9fcbb; padding: 15px; border-radius: 10px;">
+                    <h4 style="color: #191a11;">예측 확률: {pred_probability * 100:.2f}%</h4>
+                </div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
-        # 여기서 버튼 클릭 시의 이벤트 처리
-        submit_button = st.form_submit_button("탈모 진행 상태 확인하기🔎")
+        # 샴푸 이미지 출력
+        shampoo_image_html = f"""
+        <div style="background-color: #ffffff; padding: 20px; border-radius: 15px; text-align: center; margin-top: 20px;">
+            <h4 style="color: #333; font-size: 22px;">🧴 Hair We Go 맞춤형 탈모 샴푸 추천 🧴</h4>
+        </div>
+        """
+        # 제목 출력
+        st.markdown(shampoo_image_html, unsafe_allow_html=True)
 
-        if submit_button:
-            pred_proba = model.predict(batch_image)
-            pred = np.argmax(pred_proba)
-            pred_label = class_names[pred]
-            pred_probability = pred_proba[0][pred]
+        # 경로 확인: shampoo_image_paths[str(pred)]가 올바른 경로를 참조하는지 확인
+        image_path = shampoo_image_paths[str(pred)]
 
-            # 결과 표시 컨테이너
-            st.markdown(
-                """
-                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin-top: 20px;">
-                    <h3 style="text-align: center; color: #333;">모발 상태 예측 결과</h3>
-                    <div style="background-color: #e0f7fa; padding: 15px; border-radius: 10px; margin-bottom: 10px;">
-                        <h4 style="color: #00796b;">예측: {}</h4>
-                    </div>
-                    <div style="background-color: #ffe0b2; padding: 15px; border-radius: 10px;">
-                        <h4 style="color: #e65100;">예측 확률: {:.2f}%</h4>
-                    </div>
-                </div>
-                """.format(pred_label, pred_probability * 100),
-                unsafe_allow_html=True
-            )
+        # 3개의 컬럼으로 나누기
+        col1, col2, col3 = st.columns([1, 3, 1])  # 가운데 컬럼을 더 넓게 설정
+
+        # 중간 컬럼에 이미지 넣기
+        with col2:
+            st.image(image_path, width=550)  # 이미지 크기 조정
+
+        # 구매 링크 버튼
+        # 3개의 컬럼으로 나누기 (중앙에 배치하기 위해)
+        col1, col2, col3 = st.columns([3, 2, 3])  # 가운데 컬럼을 더 넓게 설정
+
+        # 중간 컬럼에 버튼 넣기
+        with col2:
+            # 버튼 추가 (버튼 클릭 시 구매 페이지로 이동)
+            if st.button('지금 구매하기🏃🏻‍♀️‍➡️'):
+                # 버튼 클릭 시 새 탭에서 링크 열기 (HTML 링크)
+                st.markdown(
+                    f'<a href="https://www.oliveyoung.co.kr/store/planshop/getPlanShopDetail.do?dispCatNo=500000102250043&trackingCd=Home_Catchkeyword" target="_blank">구매 페이지로 이동</a>',
+                    unsafe_allow_html=True
+                )
 
     # 서버에 저장
     save_path = os.path.join(SAVE_DIR, uploaded_file.name)
@@ -180,5 +196,42 @@ if uploaded_file is not None:
 
 # 데이터 정보 확인
 st.markdown("---")
+
+
+# 탈모 건강 상식
+st.markdown("### 📚 탈모 건강 상식")
+# 블록 1: 좌측 - 이미지, 우측 - 설명
+col1, col2 = st.columns([1, 2])  # 왼쪽 열은 1배, 오른쪽 열은 2배 크기
+
+# 블록 1 내용
+with col1:
+    st.image("streamlit_images/hair_tip_1.jpg", caption="Tip 1: 탈모 예방 두피 마사지", width=180)
+
+with col2:
+    st.markdown(
+        """
+        두피를 마사지 해주면 혈액순환을 촉진하여 
+        모공 속 노폐물과 공해물질을 배출해 영양 공급에 도움이 됩니다.
+        적당한 지압은 두피를 활성화시켜 탈모 예방에 유익합니다.
+        """
+    )
+
+# 블록 2: 좌측 - 이미지, 우측 - 설명
+col1, col2 = st.columns([1, 2])  # 왼쪽 열은 1배, 오른쪽 열은 2배 크기
+
+# 블록 2 내용
+with col1:
+    st.image("streamlit_images/hair_tip_2.jpg", caption="Tip 2: 올바른 샴푸 사용법", width=180)
+
+with col2:
+    st.markdown(
+        """
+        - **Step 1:** 샴푸 전 브러싱하기  
+        - **Step 2:** 모발 충분히 적셔주기  
+        - **Step 3:** 샴푸 덜어내기  
+        - **Step 4:** 손으로 충분히 거품 내어주기... 
+        """
+    )
+
 
 st.link_button("두피 이미지 데이터셋 바로가기", "https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=216")
