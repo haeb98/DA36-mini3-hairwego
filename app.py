@@ -178,13 +178,20 @@ if uploaded_file is not None:
 
         # 중간 컬럼에 버튼 넣기
         with col2:
-            # 버튼 추가 (버튼 클릭 시 구매 페이지로 이동)
-            if st.button('지금 구매하기🏃🏻‍♀️‍➡️'):
-                # 버튼 클릭 시 새 탭에서 링크 열기 (HTML 링크)
-                st.markdown(
-                    f'<a href="https://www.oliveyoung.co.kr/store/planshop/getPlanShopDetail.do?dispCatNo=500000102250043&trackingCd=Home_Catchkeyword" target="_blank">구매 페이지로 이동</a>',
-                    unsafe_allow_html=True
-                )
+            # HTML 버튼으로 새 탭에서 페이지 이동
+            st.markdown(
+                """
+                <div style="text-align: center;">
+                    <a href="https://www.oliveyoung.co.kr/store/planshop/getPlanShopDetail.do?dispCatNo=500000102250043&trackingCd=Home_Catchkeyword" 
+                       target="_blank" 
+                       style="display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; 
+                              border-radius: 8px; font-size: 18px; font-weight: bold;">
+                        지금 구매하기 🏃🏻‍♀️➡️
+                    </a>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
     # 서버에 저장
     save_path = os.path.join(SAVE_DIR, uploaded_file.name)
