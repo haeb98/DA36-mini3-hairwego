@@ -184,11 +184,12 @@ if uploaded_file is not None:
                 <div style="text-align: center;">
                     <a href="https://www.oliveyoung.co.kr/store/planshop/getPlanShopDetail.do?dispCatNo=500000102250043&trackingCd=Home_Catchkeyword" 
                        target="_blank" 
-                       style="display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; 
+                       style="display: inline-block; background-color: #f9fcbb; color: black; padding: 10px 20px; text-decoration: none; 
                               border-radius: 8px; font-size: 18px; font-weight: bold;">
                         지금 구매하기 🏃🏻‍♀️➡️
                     </a>
                 </div>
+                <br>
                 """,
                 unsafe_allow_html=True
             )
